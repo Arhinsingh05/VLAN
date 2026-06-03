@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLAN / Virtual LAN</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0A1628;
+      --blue: #0D3B8C;
+      --cyan: #00C9E0;
+      --gold: #F4B942;
+      --slate: #1E2D45;
+      --light: #E8F0FE;
+      --white: #FFFFFF;
+      --text: #B8C8E8;
+      --green: #00D4A0;
+      --red: #FF4E6A;
+      --purple: #7B5EA7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0A1628 0%, #0D3B8C 60%, #0A2050 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 20px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 201, 224, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 201, 224, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 201, 224, 0.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+      0% {
+        background-position: 0 0
+      }
+
+      100% {
+        background-position: 60px 60px
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      position: relative;
+      top: -20px;
+      background: rgba(0, 201, 224, 0.15);
+      border: 1px solid rgba(0, 201, 224, 0.4);
+      color: var(--cyan);
+      padding: 6px 20px;
+      border-radius: 30px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3.5rem, 9vw, 8rem);
+      font-weight: 800;
+      line-height: 0.9;
+      animation: fadeUp 0.9s 0.15s ease both;
+    }
+
+    .hero h1 span {
+      color: var(--cyan);
+      display: block;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 28px auto 0;
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+
+    .scroll-cta {
+      margin-top: 50px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 1s 0.45s ease both;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--navy);
+      padding: 14px 36px;
+      border-radius: 50px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0, 201, 224, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      padding: 14px 36px;
+      border-radius: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 22, 40, 0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 201, 224, 0.15);
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      padding: 14px 20px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(0, 201, 224, 0.12);
+      border-color: rgba(0, 201, 224, 0.4);
+      color: var(--cyan);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 90px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      scroll-margin-top: 120px;
+    }
+
+    .section-full {
+      padding: 90px 20px;
+      scroll-margin-top: 120px;
+    }
+
+    .section-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    h2 em {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    .lead {
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 720px;
+    }
+
+    /* ── CARDS ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 50px;
+    }
+
+    .card {
+      background: var(--slate);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 32px;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent, var(--cyan));
+      border-radius: 20px 20px 0 0;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+      border-color: rgba(0, 201, 224, 0.2);
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    /* ── DIVIDER ── */
+    .full-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 201, 224, 0.3), transparent);
+      margin: 0;
+    }
+
+    /* ── DEFINITION BOX ── */
+    .def-box {
+      background: linear-gradient(135deg, rgba(13, 59, 140, 0.5), rgba(0, 201, 224, 0.08));
+      border: 1px solid rgba(0, 201, 224, 0.35);
+      border-radius: 24px;
+      padding: 48px;
+      position: relative;
+      margin-top: 50px;
+    }
+
+    .def-box .quote-mark {
+      position: absolute;
+      top: 20px;
+      left: 32px;
+      font-size: 6rem;
+      color: rgba(0, 201, 224, 0.12);
+      font-family: 'Syne', sans-serif;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .def-box blockquote {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+      font-weight: 600;
+      line-height: 1.5;
+      position: relative;
+      z-index: 1;
+    }
+
+    .def-box blockquote strong {
+      color: var(--cyan);
+    }
+
+    /* ── COMPARISON TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 50px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--blue);
+      padding: 16px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: left;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    thead th:first-child {
+      border-radius: 12px 0 0 0;
+    }
+
+    thead th:last-child {
+      border-radius: 0 12px 0 0;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: rgba(0, 201, 224, 0.06);
+    }
+
+    tbody td {
+      padding: 16px 20px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    tbody td:first-child {
+      color: var(--white);
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .tag-cyan {
+      background: rgba(0, 201, 224, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 201, 224, 0.3);
+    }
+
+    .tag-gold {
+      background: rgba(244, 185, 66, 0.15);
+      color: var(--gold);
+      border: 1px solid rgba(244, 185, 66, 0.3);
+    }
+
+    .tag-green {
+      background: rgba(0, 212, 160, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(0, 212, 160, 0.3);
+    }
+
+    .tag-purple {
+      background: rgba(123, 94, 167, 0.15);
+      color: var(--purple);
+      border: 1px solid rgba(123, 94, 167, 0.3);
+    }
+
+    .tag-red {
+      background: rgba(255, 78, 106, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(255, 78, 106, 0.3);
+    }
+
+    /* ── ACCORDION ── */
+    .accordion {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .acc-item {
+      background: var(--slate);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .acc-header {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--white);
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: left;
+      transition: background 0.2s;
+    }
+
+    .acc-header:hover {
+      background: rgba(0, 201, 224, 0.05);
+    }
+
+    .acc-header .icon {
+      font-size: 1.4rem;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .acc-header.open .icon {
+      transform: rotate(45deg);
+    }
+
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+    }
+
+    .acc-body.open {
+      max-height: 600px;
+    }
+
+    .acc-body-inner {
+      padding: 0 28px 24px;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .acc-body-inner ul {
+      padding-left: 20px;
+      margin-top: 12px;
+    }
+
+    .acc-body-inner li {
+      margin-bottom: 8px;
+    }
+
+    .acc-body-inner li strong {
+      color: var(--cyan);
+    }
+
+    /* ── CLASSIFICATION TABS ── */
+    .tabs-wrap {
+      margin-top: 50px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      background: var(--slate);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: var(--blue);
+      border-color: var(--cyan);
+      color: var(--white);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .vlan-type-card {
+      background: linear-gradient(135deg, var(--slate), rgba(13, 59, 140, 0.3));
+      border: 1px solid rgba(0, 201, 224, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    @media(max-width:700px) {
+      .vlan-type-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .vlan-type-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .vlan-type-card h3 span {
+      color: var(--cyan);
+    }
+
+    .vlan-type-card p {
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .use-case-list {
+      list-style: none;
+    }
+
+    .use-case-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .use-case-list li:last-child {
+      border-bottom: none;
+    }
+
+    .use-case-list li .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .vlan-visual {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .vlan-visual-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .node-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue);
+      border: 1px solid rgba(0, 201, 224, 0.25);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .node .node-icon {
+      font-size: 1.4rem;
+    }
+
+    .arrow {
+      color: var(--cyan);
+      font-size: 1.2rem;
+    }
+
+    .switch-node {
+      background: linear-gradient(135deg, var(--blue), rgba(0, 201, 224, 0.2));
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      text-align: center;
+      font-size: 0.8rem;
+      width: 100%;
+    }
+
+    /* ── BENEFITS ── */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 50px;
+    }
+
+    .benefit-card {
+      background: var(--slate);
+      border-radius: 18px;
+      padding: 28px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .benefit-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .benefit-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .benefit-card p {
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    /* ── TOPOLOGY DIAGRAM ── */
+    .topology {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 201, 224, 0.15);
+      border-radius: 24px;
+      padding: 40px;
+      margin-top: 50px;
+      text-align: center;
+    }
+
+    .topo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 700px;
+      margin: 30px auto 0;
+    }
+
+    .topo-vlan {
+      border-radius: 16px;
+      padding: 20px 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 2px solid;
+    }
+
+    .topo-vlan.v1 {
+      background: rgba(0, 201, 224, 0.1);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .topo-vlan.v2 {
+      background: rgba(244, 185, 66, 0.1);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .topo-vlan.v3 {
+      background: rgba(0, 212, 160, 0.1);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .topo-vlan.v4 {
+      background: rgba(123, 94, 167, 0.1);
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+
+    .topo-vlan.v5 {
+      background: rgba(255, 78, 106, 0.1);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .topo-vlan.center {
+      background: linear-gradient(135deg, var(--blue), rgba(0, 201, 224, 0.2));
+      border-color: var(--cyan);
+      color: var(--white);
+      grid-column: 2;
+    }
+
+    .topo-vlan .label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 4px;
+    }
+
+    .topo-devices {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--slate);
+      border-top: 1px solid rgba(0, 201, 224, 0.12);
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    footer p {
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    footer strong {
+      color: var(--cyan);
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--gold));
+      width: 0%;
+      z-index: 200;
+      transition: width 0.1s;
+    }
+
+    /* ── TOOLTIP ── */
+    [data-tip] {
+      position: relative;
+      cursor: help;
+      border-bottom: 1px dashed var(--cyan);
+    }
+
+    [data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--navy);
+      border: 1px solid var(--cyan);
+      border-radius: 8px;
+      padding: 8px 14px;
+      white-space: nowrap;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+
+    [data-tip]:hover::after {
+      opacity: 1;
+    }
+
+    /* ── SECTION BG ALTERNATES ── */
+    .bg-alt {
+      background: rgba(14, 26, 50, 0.6);
+    }
+
+    .section-full {
+      padding: 90px 20px;
+    }
+
+    .section-full .inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:600px) {
+      .topo-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .topo-vlan.center {
+        grid-column: span 2;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="progress-bar" id="progress"></div>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="inicio" style="max-width:100%;padding:100px 20px 60px">
+    <div class="grid-lines"></div>
+    <div class="badge">Redes II</div>
+    <h1>VLAN<span>Virtual LAN</span></h1>
+    <p>Domina las <strong style="color:var(--cyan)">Redes de Área Local Virtual</strong> — desde su definición
+      fundamental hasta su clasificación avanzada. Todo lo que necesitas para entender, diseñar y exponer con autoridad.
+    </p>
+    <div class="scroll-cta">
+      <a href="#definicion" class="btn-primary">Comenzar</a>
+      <a href="#clasificacion" class="btn-outline">Ver Clasificación</a>
+    </div>
+  </section>
+
+  <!-- ═══ NAV ═══ -->
+  <nav id="mainNav">
+    <button class="nav-btn" onclick="scrollToSection('inicio')">Inicio</button>
+    <button class="nav-btn" onclick="scrollToSection('definicion')">Definición</button>
+    <button class="nav-btn" onclick="scrollToSection('para-que-sirve')">¿Para Qué Sirve?</button>
+    <button class="nav-btn" onclick="scrollToSection('clasificacion')">Clasificación</button>
+    <button class="nav-btn" onclick="scrollToSection('tabla')">Comparativa</button>
+    <button class="nav-btn" onclick="scrollToSection('beneficios')">Beneficios</button>
+    <button class="nav-btn" onclick="scrollToSection('topologia')">Topología</button>
+  </nav>
+
+  <!-- ═══ DEFINICIÓN ═══ -->
+  <section id="definicion">
+    <div class="section-label">01 — Fundamentos</div>
+    <h2>¿Qué es una <em>VLAN</em>?</h2>
+    <p class="lead">Una VLAN (Virtual Local Area Network) es una tecnología de red que permite crear <span
+        data-tip="segmentos lógicos independientes">segmentos lógicos</span> dentro de una misma infraestructura física,
+      como si fueran redes completamente separadas.</p>
+
+    <div class="def-box">
+      <div class="quote-mark">"</div>
+      <blockquote>
+        Una <strong>VLAN</strong> es una agrupación lógica de dispositivos de red que se comportan como si estuvieran en
+        el mismo segmento de red físico, independientemente de su ubicación geográfica o conexión física al switch.
+      </blockquote>
+    </div>
+
+    <div class="card-grid" style="margin-top:40px">
+      <div class="card" style="--accent:var(--cyan)">
+        <div class="card-icon">🌐</div>
+        <h3>Red Virtual</h3>
+        <p>Opera sobre la infraestructura física existente, creando redes lógicas independientes sin necesidad de nuevo
+          cableado.</p>
+      </div>
+      <div class="card" style="--accent:var(--gold)">
+        <div class="card-icon">🔒</div>
+        <h3>Aislamiento Lógico</h3>
+        <p>Separa el tráfico entre departamentos o grupos de trabajo, mejorando la seguridad sin infraestructura
+          adicional.</p>
+      </div>
+      <div class="card" style="--accent:var(--green)">
+        <div class="card-icon">📡</div>
+        <h3>Estándar IEEE 802.1Q</h3>
+        <p>Definida por el estándar <span data-tip="IEEE 802.1Q: protocolo que define el etiquetado de tramas">IEEE
+            802.1Q</span>, que especifica el etiquetado de tramas Ethernet para identificar cada VLAN.</p>
+      </div>
+      <div class="card" style="--accent:var(--purple)">
+        <div class="card-icon">⚙️</div>
+        <h3>Configuración por Software</h3>
+        <p>Se configura y administra completamente por software en switches administrables, sin requerir cambios
+          físicos.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="full-divider"></div>
+
+  <!-- ═══ PARA QUÉ SIRVE ═══ -->
+  <div class="section-full bg-alt" id="para-que-sirve">
+    <section style="padding:0">
+      <div class="section-label">02 — Propósito</div>
+      <h2>¿Para Qué <em>Sirve</em>?</h2>
+      <p class="lead">Las VLANs resuelven problemas críticos de rendimiento, seguridad y administración en redes
+        empresariales modernas.</p>
+
+      <div class="accordion" id="accordion">
+
+        <div class="acc-item">
+          <button class="acc-header" onclick="toggleAcc(this)">
+            <span>🛡️ &nbsp; Segmentación y Seguridad de Red</span>
+            <span class="icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              Permite aislar grupos de usuarios o sistemas para reducir la superficie de ataque y contener amenazas
+              dentro de un segmento limitado.
+              <ul>
+                <li><strong>Contención de brechas:</strong> Si un equipo es comprometido, el ataque queda confinado a su
+                  VLAN.</li>
+                <li><strong>Separación de sistemas críticos:</strong> Servidores, bases de datos y gestión en VLANs
+                  dedicadas.</li>
+                <li><strong>Control de acceso granular:</strong> Las ACLs entre VLANs permiten políticas de seguridad
+                  precisas.</li>
+                <li><strong>Cumplimiento normativo:</strong> Facilita cumplir PCI-DSS, HIPAA e ISO 27001 al segmentar
+                  datos sensibles.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-header" onclick="toggleAcc(this)">
+            <span>⚡ &nbsp; Optimización del Rendimiento</span>
+            <span class="icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              Reduce el dominio de broadcast, mejorando significativamente el rendimiento en redes medianas y grandes.
+              <ul>
+                <li><strong>Reducción de broadcast:</strong> El tráfico de broadcast solo circula dentro de su VLAN, no
+                  en toda la red.</li>
+                <li><strong>Menor congestión:</strong> Divide grandes redes en segmentos más manejables y eficientes.
+                </li>
+                <li><strong>Priorización de tráfico:</strong> VLANs de VoIP o videoconferencia con QoS dedicado.</li>
+                <li><strong>Mejor latencia:</strong> Menor cantidad de equipos en cada dominio de colisión.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-header" onclick="toggleAcc(this)">
+            <span>🏢 &nbsp; Organización Departamental</span>
+            <span class="icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              Permite agrupar usuarios por departamento o función sin importar su ubicación física en el edificio o
+              campus.
+              <ul>
+                <li><strong>Movilidad de usuarios:</strong> Un empleado puede moverse de oficina sin reconfiguraciones
+                  de red.</li>
+                <li><strong>Administración centralizada:</strong> Gestiona toda la red desde un punto central.</li>
+                <li><strong>Escala fácilmente:</strong> Agrega usuarios a una VLAN sin tocar el cableado físico.</li>
+                <li><strong>Reduce costos:</strong> Elimina la necesidad de switches y routers físicos adicionales.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-header" onclick="toggleAcc(this)">
+            <span>📞 &nbsp; Soporte a Servicios Críticos (VoIP, IoT)</span>
+            <span class="icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              Las VLANs dedicadas garantizan la calidad de servicio para tecnologías sensibles a la latencia o que
+              requieren aislamiento por seguridad.
+              <ul>
+                <li><strong>VLAN de Voz:</strong> Separa el tráfico VoIP del de datos para garantizar calidad de
+                  llamada.</li>
+                <li><strong>VLAN de IoT:</strong> Aísla dispositivos inteligentes (cámaras, sensores) del resto de la
+                  red.</li>
+                <li><strong>VLAN de Gestión:</strong> Red exclusiva para administración de switches, routers y APs.</li>
+                <li><strong>VLAN de Invitados:</strong> Acceso a Internet para visitantes sin acceso a recursos
+                  internos.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <div class="full-divider"></div>
+
+  <!-- ═══ CLASIFICACIÓN ═══ -->
+  <section id="clasificacion">
+    <div class="section-label">03 — Clasificación</div>
+    <h2><em>Tipos</em> de VLAN</h2>
+    <p class="lead">Las VLANs se clasifican según el método que usan para asignar membresía a los dispositivos de red.
+      Cada tipo tiene casos de uso específicos.</p>
+
+    <div class="tabs-wrap">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="openTab(this,'t1')">Por Puerto</button>
+        <button class="tab-btn" onclick="openTab(this,'t2')">Por MAC</button>
+        <button class="tab-btn" onclick="openTab(this,'t3')">Por Protocolo</button>
+        <button class="tab-btn" onclick="openTab(this,'t4')">Por Subred IP</button>
+        <button class="tab-btn" onclick="openTab(this,'t5')">Nativas & Trunk</button>
+      </div>
+
+      <!-- T1 -->
+      <div class="tab-content active" id="t1">
+        <div class="vlan-type-card">
+          <div>
+            <span class="tag tag-cyan">Tipo 01</span>
+            <h3 style="margin-top:14px">VLAN Estática <span>por Puerto</span></h3>
+            <p>Es el método más común y sencillo. El administrador asigna manualmente cada puerto del switch a una VLAN
+              específica. Cualquier dispositivo conectado a ese puerto hereda automáticamente la membresía de la VLAN.
+            </p>
+            <ul class="use-case-list">
+              <li>
+                <div class="dot"></div>
+                <div><strong>Oficinas fijas:</strong> Escritorios con asignación permanente por departamento.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Fácil diagnóstico:</strong> Es simple identificar qué VLAN usa cada dispositivo.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Alta seguridad física:</strong> El acceso está ligado al puerto físico del switch.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Cisco, HP, Aruba:</strong> Implementado en todos los switches empresariales.</div>
+              </li>
+            </ul>
+          </div>
+          <div class="vlan-visual">
+            <div class="vlan-visual-title">Diagrama — Puerto a VLAN</div>
+            <div class="switch-node">🔀 Switch Administrable (24 puertos)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <div class="node" style="background:rgba(0,201,224,0.1);border-color:var(--cyan)">
+                <div class="node-icon">💻</div>
+                Puerto 1–8<br><span style="color:var(--cyan)">VLAN 10</span>
+              </div>
+              <div class="node" style="background:rgba(244,185,66,0.1);border-color:var(--gold)">
+                <div class="node-icon">🖥️</div>
+                Puerto 9–16<br><span style="color:var(--gold)">VLAN 20</span>
+              </div>
+              <div class="node" style="background:rgba(0,212,160,0.1);border-color:var(--green)">
+                <div class="node-icon">📞</div>
+                Puerto 17–22<br><span style="color:var(--green)">VLAN 30</span>
+              </div>
+              <div class="node" style="background:rgba(123,94,167,0.1);border-color:var(--purple)">
+                <div class="node-icon">🔒</div>
+                Puerto 23–24<br><span style="color:var(--purple)">VLAN 99 Mgmt</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T2 -->
+      <div class="tab-content" id="t2">
+        <div class="vlan-type-card">
+          <div>
+            <span class="tag tag-gold">Tipo 02</span>
+            <h3 style="margin-top:14px">VLAN Dinámica <span>por Dirección MAC</span></h3>
+            <p>La membresía se asigna automáticamente basándose en la dirección MAC del dispositivo. Un servidor VMPS
+              (VLAN Membership Policy Server) o 802.1X determina a qué VLAN pertenece cada equipo al conectarse.</p>
+            <ul class="use-case-list">
+              <li>
+                <div class="dot"></div>
+                <div><strong>Movilidad total:</strong> El usuario lleva su VLAN sin importar en qué puerto se conecte.
+                </div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>BYOD:</strong> Ideal para entornos donde los empleados usan sus propios dispositivos.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Mayor administración:</strong> Requiere base de datos de MACs actualizada constantemente.
+                </div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Riesgo de MAC Spoofing:</strong> Menos seguro si no se complementa con 802.1X.</div>
+              </li>
+            </ul>
+          </div>
+          <div class="vlan-visual">
+            <div class="vlan-visual-title">Flujo — Autenticación por MAC</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="node"
+                style="width:100%;flex-direction:row;justify-content:center;gap:10px;background:rgba(244,185,66,0.1);border-color:var(--gold)">
+                <div class="node-icon">💻</div>
+                <div>Dispositivo conecta<br><span style="color:var(--gold);font-size:0.7rem">MAC:
+                    AA:BB:CC:DD:EE:FF</span></div>
+              </div>
+              <div style="text-align:center;color:var(--gold)">↓ Consulta</div>
+              <div class="node" style="width:100%;flex-direction:row;justify-content:center;gap:10px">
+                <div class="node-icon">🗄️</div>
+                <div>Servidor VMPS / RADIUS<br><span style="color:var(--text);font-size:0.7rem">Base de datos de
+                    MACs</span></div>
+              </div>
+              <div style="text-align:center;color:var(--gold)">↓ Respuesta</div>
+              <div class="node"
+                style="width:100%;flex-direction:row;justify-content:center;gap:10px;background:rgba(244,185,66,0.1);border-color:var(--gold)">
+                <div class="node-icon">✅</div>
+                <div>Asignado a VLAN 20<br><span style="color:var(--gold);font-size:0.7rem">Contabilidad</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T3 -->
+      <div class="tab-content" id="t3">
+        <div class="vlan-type-card">
+          <div>
+            <span class="tag tag-purple">Tipo 03</span>
+            <h3 style="margin-top:14px">VLAN por <span>Protocolo</span></h3>
+            <p>La membresía se determina según el tipo de protocolo de red utilizado en la trama Ethernet (IPv4, IPv6,
+              IPX, AppleTalk). Útil en redes heterogéneas con múltiples sistemas operativos o tecnologías.</p>
+            <ul class="use-case-list">
+              <li>
+                <div class="dot"></div>
+                <div><strong>Redes heredadas:</strong> Separa tráfico legacy (Novell IPX) del moderno (IPv4/IPv6).</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Multiprotocolo:</strong> Entornos con IPv4 e IPv6 coexistiendo.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Menos común hoy:</strong> Con el dominio de IP, su uso ha disminuido.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Requiere hardware:</strong> Solo en switches Layer 3 con soporte de protocolo.</div>
+              </li>
+            </ul>
+          </div>
+          <div class="vlan-visual">
+            <div class="vlan-visual-title">Separación por Protocolo</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="node"
+                style="width:100%;flex-direction:row;gap:10px;background:rgba(0,201,224,0.1);border-color:var(--cyan)">
+                <div class="node-icon">🌐</div>
+                <div>Protocolo IPv4 → <strong style="color:var(--cyan)">VLAN 10</strong></div>
+              </div>
+              <div class="node"
+                style="width:100%;flex-direction:row;gap:10px;background:rgba(244,185,66,0.1);border-color:var(--gold)">
+                <div class="node-icon">🔗</div>
+                <div>Protocolo IPv6 → <strong style="color:var(--gold)">VLAN 20</strong></div>
+              </div>
+              <div class="node"
+                style="width:100%;flex-direction:row;gap:10px;background:rgba(123,94,167,0.1);border-color:var(--purple)">
+                <div class="node-icon">📟</div>
+                <div>Protocolo IPX → <strong style="color:var(--purple)">VLAN 30</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T4 -->
+      <div class="tab-content" id="t4">
+        <div class="vlan-type-card">
+          <div>
+            <span class="tag tag-green">Tipo 04</span>
+            <h3 style="margin-top:14px">VLAN por <span>Subred IP</span></h3>
+            <p>Asigna la VLAN en función de la dirección IP o subred de origen del dispositivo. Requiere switches Layer
+              3. Permite una alineación natural entre la topología lógica IP y la segmentación VLAN.</p>
+            <ul class="use-case-list">
+              <li>
+                <div class="dot"></div>
+                <div><strong>Alineación IP:</strong> 192.168.10.0/24 → VLAN 10; 192.168.20.0/24 → VLAN 20.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Fácil administración:</strong> La lógica de red es muy intuitiva para los administradores.
+                </div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Requiere L3:</strong> El switch debe analizar hasta capa 3 del modelo OSI.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>Bueno para DHCP:</strong> Combinado con servidores DHCP por scope de subred.</div>
+              </li>
+            </ul>
+          </div>
+          <div class="vlan-visual">
+            <div class="vlan-visual-title">Mapeo Subred → VLAN</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div
+                style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,212,160,0.1);border:1px solid var(--green);border-radius:10px;padding:12px 16px">
+                <span style="font-size:0.8rem;color:var(--text)">192.168.10.0/24</span>
+                <span class="arrow">→</span>
+                <span class="tag tag-green">VLAN 10 — TI</span>
+              </div>
+              <div
+                style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,201,224,0.1);border:1px solid var(--cyan);border-radius:10px;padding:12px 16px">
+                <span style="font-size:0.8rem;color:var(--text)">192.168.20.0/24</span>
+                <span class="arrow">→</span>
+                <span class="tag tag-cyan">VLAN 20 — RRHH</span>
+              </div>
+              <div
+                style="display:flex;justify-content:space-between;align-items:center;background:rgba(244,185,66,0.1);border:1px solid var(--gold);border-radius:10px;padding:12px 16px">
+                <span style="font-size:0.8rem;color:var(--text)">192.168.30.0/24</span>
+                <span class="arrow">→</span>
+                <span class="tag tag-gold">VLAN 30 — Ventas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T5 -->
+      <div class="tab-content" id="t5">
+        <div class="vlan-type-card">
+          <div>
+            <span class="tag tag-red">Tipo 05</span>
+            <h3 style="margin-top:14px">VLAN <span>Nativa & Trunk</span></h3>
+            <p>Un enlace Trunk (troncal) transporta el tráfico de múltiples VLANs entre switches usando etiquetas
+              802.1Q. La VLAN Nativa es la única VLAN cuyo tráfico viaja sin etiquetar en un enlace trunk.</p>
+            <ul class="use-case-list">
+              <li>
+                <div class="dot"></div>
+                <div><strong>Trunk:</strong> Un solo cable conecta dos switches transportando todas las VLANs.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>VLAN Nativa (default 1):</strong> Se recomienda cambiarla a una VLAN no usada por
+                  seguridad.</div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>802.1Q tagging:</strong> Cada trama lleva un campo de 4 bytes con el ID de VLAN (VID).
+                </div>
+              </li>
+              <li>
+                <div class="dot"></div>
+                <div><strong>VLAN de gestión:</strong> Generalmente VLAN 99 o 100 en entornos empresariales.</div>
+              </li>
+            </ul>
+          </div>
+          <div class="vlan-visual">
+            <div class="vlan-visual-title">Enlace Trunk — Multi-VLAN</div>
+            <div class="switch-node">🔀 Switch A</div>
+            <div
+              style="text-align:center;padding:10px 0;font-family:'Syne',sans-serif;font-size:0.75rem;color:var(--cyan)">
+              ═══ Trunk 802.1Q (VLANs 10,20,30,99) ═══
+            </div>
+            <div class="switch-node">🔀 Switch B</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+              <div
+                style="background:rgba(0,201,224,0.1);border:1px solid var(--cyan);border-radius:8px;padding:10px;font-size:0.75rem;text-align:center;font-family:'Syne',sans-serif">
+                <span style="color:var(--cyan)">VLAN 10</span><br>TI</div>
+              <div
+                style="background:rgba(244,185,66,0.1);border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.75rem;text-align:center;font-family:'Syne',sans-serif">
+                <span style="color:var(--gold)">VLAN 20</span><br>Admin</div>
+              <div
+                style="background:rgba(0,212,160,0.1);border:1px solid var(--green);border-radius:8px;padding:10px;font-size:0.75rem;text-align:center;font-family:'Syne',sans-serif">
+                <span style="color:var(--green)">VLAN 30</span><br>VoIP</div>
+              <div
+                style="background:rgba(255,78,106,0.1);border:1px solid var(--red);border-radius:8px;padding:10px;font-size:0.75rem;text-align:center;font-family:'Syne',sans-serif">
+                <span style="color:var(--red)">VLAN 99</span><br>Mgmt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="full-divider"></div>
+
+  <!-- ═══ TABLA COMPARATIVA ═══ -->
+  <div class="section-full bg-alt" id="tabla">
+    <section style="padding:0">
+      <div class="section-label">04 — Comparativa</div>
+      <h2>Tabla <em>Comparativa</em></h2>
+      <p class="lead">Compara los tipos de VLAN según sus características clave para tomar la mejor decisión en tu
+        diseño de red.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo de VLAN</th>
+              <th>Método de Asignación</th>
+              <th>Capa OSI</th>
+              <th>Movilidad</th>
+              <th>Seguridad</th>
+              <th>Complejidad</th>
+              <th>Uso Típico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>VLAN por Puerto (Estática)</td>
+              <td>Manual — Puerto físico</td>
+              <td>Capa 1 / 2</td>
+              <td>🔴 Baja</td>
+              <td>🟢 Alta</td>
+              <td><span class="tag tag-green">Baja</span></td>
+              <td>Oficinas fijas, escritorios</td>
+            </tr>
+            <tr>
+              <td>VLAN por MAC (Dinámica)</td>
+              <td>Automático — Dirección MAC</td>
+              <td>Capa 2</td>
+              <td>🟢 Alta</td>
+              <td>🟡 Media</td>
+              <td><span class="tag tag-gold">Media</span></td>
+              <td>BYOD, usuarios móviles</td>
+            </tr>
+            <tr>
+              <td>VLAN por Protocolo</td>
+              <td>Tipo de protocolo L3/L4</td>
+              <td>Capa 2 / 3</td>
+              <td>🟡 Media</td>
+              <td>🟡 Media</td>
+              <td><span class="tag tag-gold">Media</span></td>
+              <td>Redes heterogéneas</td>
+            </tr>
+            <tr>
+              <td>VLAN por Subred IP</td>
+              <td>Dirección IP / Subred</td>
+              <td>Capa 3</td>
+              <td>🟢 Alta</td>
+              <td>🟢 Alta</td>
+              <td><span class="tag tag-cyan">Media-Alta</span></td>
+              <td>Redes L3, datacenter</td>
+            </tr>
+            <tr>
+              <td>VLAN Nativa</td>
+              <td>Tráfico sin etiquetar en trunk</td>
+              <td>Capa 2</td>
+              <td>—</td>
+              <td>🔴 Muy Baja*</td>
+              <td><span class="tag tag-green">Baja</span></td>
+              <td>Gestión de switches (con precaución)</td>
+            </tr>
+            <tr>
+              <td>VLAN Trunk (802.1Q)</td>
+              <td>Etiquetado de tramas</td>
+              <td>Capa 2</td>
+              <td>🟢 Alta</td>
+              <td>🟢 Alta</td>
+              <td><span class="tag tag-purple">Alta</span></td>
+              <td>Interconexión de switches</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text);font-size:0.78rem;margin-top:12px">* La VLAN Nativa por defecto (VLAN 1) es
+          vulnerable a ataques de VLAN Hopping. Se recomienda cambiarla.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="full-divider"></div>
+
+  <!-- ═══ BENEFICIOS ═══ -->
+  <section id="beneficios">
+    <div class="section-label">05 — Impacto</div>
+    <h2><em>Beneficios</em> Clave</h2>
+    <p class="lead">Las VLANs transforman la infraestructura de red empresarial, generando beneficios tangibles en
+      seguridad, costo y eficiencia.</p>
+
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-number">60%</div>
+        <h4>Reducción de Broadcast</h4>
+        <p>Menor tráfico innecesario mejora el rendimiento general de la red.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-number">4096</div>
+        <h4>VLANs Posibles</h4>
+        <p>El estándar 802.1Q permite hasta 4096 VLANs por dominio de red.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-number">~40%</div>
+        <h4>Ahorro en Infraestructura</h4>
+        <p>Elimina la necesidad de switches y cableado físico separados por departamento.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-number">24/7</div>
+        <h4>Administración Remota</h4>
+        <p>Configuración y monitoreo de VLANs desde cualquier lugar vía SSH/HTTPS.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-number">99.9%</div>
+        <h4>Disponibilidad</h4>
+        <p>Fallos en una VLAN no afectan las demás, mejorando la resiliencia.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-number">🔒</div>
+        <h4>Cumplimiento Normativo</h4>
+        <p>Facilita PCI-DSS, HIPAA e ISO 27001 con segmentación de datos sensibles.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="full-divider"></div>
+
+  <!-- ═══ TOPOLOGÍA ═══ -->
+  <div class="section-full bg-alt" id="topologia">
+    <section style="padding:0">
+      <div class="section-label">06 — Arquitectura</div>
+      <h2><em>Topología</em> Empresarial Típica</h2>
+      <p class="lead">Así se ve una red empresarial segmentada con VLANs — múltiples departamentos coexistiendo sobre la
+        misma infraestructura física.</p>
+
+      <div class="topology">
+        <p style="color:var(--text);font-size:0.85rem;margin-bottom:6px">Infraestructura Física Compartida</p>
+        <div class="topo-grid">
+          <div class="topo-vlan v1">
+            <div>💻</div>
+            <div style="margin-top:6px">VLAN 10</div>
+            <div class="label">Tecnología</div>
+            <div class="topo-devices">💻🖥️</div>
+          </div>
+          <div class="topo-vlan center">
+            <div>🔀</div>
+            <div style="margin-top:6px">Core Switch</div>
+            <div class="label">L3 — 802.1Q</div>
+          </div>
+          <div class="topo-vlan v2">
+            <div>📊</div>
+            <div style="margin-top:6px">VLAN 20</div>
+            <div class="label">Finanzas</div>
+            <div class="topo-devices">💻🖨️</div>
+          </div>
+          <div class="topo-vlan v3">
+            <div>📞</div>
+            <div style="margin-top:6px">VLAN 30</div>
+            <div class="label">VoIP</div>
+            <div class="topo-devices">📱☎️</div>
+          </div>
+          <div class="topo-vlan v4">
+            <div>🌍</div>
+            <div style="margin-top:6px">VLAN 40</div>
+            <div class="label">Invitados</div>
+            <div class="topo-devices">📲💼</div>
+          </div>
+          <div class="topo-vlan v5">
+            <div>🔒</div>
+            <div style="margin-top:6px">VLAN 99</div>
+            <div class="label">Gestión</div>
+            <div class="topo-devices">⚙️🛡️</div>
+          </div>
+        </div>
+        <p style="color:var(--text);font-size:0.8rem;margin-top:24px">
+          Todas las VLANs comparten el mismo cableado físico pero están completamente <strong
+            style="color:var(--cyan)">aisladas lógicamente</strong>.
+          La comunicación entre VLANs ocurre solo a través del <strong style="color:var(--cyan)">router o switch
+            L3</strong> con políticas de ACL.
+        </p>
+      </div>
+
+      <!-- RESUMEN FINAL -->
+      <div style="margin-top:60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+        <div
+          style="background:linear-gradient(135deg,rgba(0,201,224,0.1),rgba(13,59,140,0.3));border:1px solid rgba(0,201,224,0.25);border-radius:20px;padding:32px">
+          <div style="font-size:2rem;margin-bottom:14px">📋</div>
+          <h3 style="font-family:'Syne',sans-serif;margin-bottom:10px">Resumen Rápido</h3>
+          <ul style="list-style:none;color:var(--text);font-size:0.9rem;line-height:2">
+            <li>✅ Segmentación lógica sin costo físico</li>
+            <li>✅ Mejora seguridad y rendimiento</li>
+            <li>✅ Organiza por departamento/función</li>
+            <li>✅ Estándar 802.1Q universalmente soportado</li>
+            <li>✅ Escalable y fácil de administrar</li>
+          </ul>
+        </div>
+        <div
+          style="background:linear-gradient(135deg,rgba(244,185,66,0.08),rgba(13,59,140,0.3));border:1px solid rgba(244,185,66,0.2);border-radius:20px;padding:32px">
+          <div style="font-size:2rem;margin-bottom:14px">⚠️</div>
+          <h3 style="font-family:'Syne',sans-serif;margin-bottom:10px">Consideraciones</h3>
+          <ul style="list-style:none;color:var(--text);font-size:0.9rem;line-height:2">
+            <li>⚡ Requiere switches administrables</li>
+            <li>⚡ Planificación previa del esquema</li>
+            <li>⚡ Documentación continua es clave</li>
+            <li>⚡ Cambiar la VLAN Nativa (no usar VLAN 1)</li>
+            <li>⚡ Monitorear tráfico inter-VLAN</li>
+          </ul>
+        </div>
+        <div
+          style="background:linear-gradient(135deg,rgba(0,212,160,0.08),rgba(13,59,140,0.3));border:1px solid rgba(0,212,160,0.2);border-radius:20px;padding:32px">
+          <div style="font-size:2rem;margin-bottom:14px">🚀</div>
+          <h3 style="font-family:'Syne',sans-serif;margin-bottom:10px">Fabricantes Líderes</h3>
+          <ul style="list-style:none;color:var(--text);font-size:0.9rem;line-height:2">
+            <li>🔵 <strong style="color:var(--white)">Cisco</strong> — IOS / Catalyst / Nexus</li>
+            <li>🟢 <strong style="color:var(--white)">HP / Aruba</strong> — ProCurve / CX</li>
+            <li>🟡 <strong style="color:var(--white)">Juniper</strong> — EX / QFX Series</li>
+            <li>⚪ <strong style="color:var(--white)">MikroTik</strong> — RouterOS</li>
+            <li>🔴 <strong style="color:var(--white)">Ubiquiti</strong> — UniFi Platform</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div style="font-size:2rem;margin-bottom:16px">🌐</div>
+    <p><strong>VLAN - Virtual LAN</strong></p>
+    <p style="margin-top:8px"><strong>@REInARHIN — Todos los derechos reservados</strong></p>
+    <p style="margin-top:16px;font-size:0.78rem;opacity:0.5">Redes II - 2026</p>
+  </footer>
+
+  <script>
+    // Progress bar
+    window.addEventListener('scroll', () => {
+      const el = document.getElementById('progress');
+      const h = document.documentElement;
+      const pct = (window.scrollY / (h.scrollHeight - h.clientHeight)) * 100;
+      el.style.width = pct + '%';
+    });
+
+    // Smooth scroll
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Active nav
+    const sections = ['inicio', 'definicion', 'para-que-sirve', 'clasificacion', 'tabla', 'beneficios', 'topologia'];
+    const navBtns = document.querySelectorAll('.nav-btn');
+    window.addEventListener('scroll', () => {
+      let cur = '';
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 120) cur = id;
+      });
+      navBtns.forEach((btn, i) => {
+        btn.classList.toggle('active', sections[i] === cur);
+      });
+    });
+
+    // Accordion
+    function toggleAcc(btn) {
+      const body = btn.nextElementSibling;
+      const isOpen = body.classList.contains('open');
+      document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.acc-header').forEach(h => h.classList.remove('open'));
+      if (!isOpen) { body.classList.add('open'); btn.classList.add('open'); }
+    }
+
+    // Tabs
+    function openTab(btn, id) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Intersection observer for fade-in cards
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .benefit-card, .acc-item, .topo-vlan').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+
+</html>
